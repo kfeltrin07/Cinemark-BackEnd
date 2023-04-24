@@ -1,0 +1,25 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Filmovi_projekt.Models
+{
+    public class Comments
+    {
+        [Key]
+        public int id_comment { get; set; }
+
+        public int id_user { get; set; }
+
+        public int id_film { get; set; }
+
+        [Column (TypeName = "varchar(255)")]
+        public string comment { get; set; }
+
+        [Column (TypeName = "DateTime NULL")]
+        public DateTime change_date { get; set; }
+
+        [Column (TypeName = "DateTime NULL")]
+        public DateTime insert_date { get; set; }
+    }
+}
