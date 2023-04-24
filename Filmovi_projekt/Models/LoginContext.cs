@@ -8,6 +8,6 @@ namespace Filmovi.Models
         { 
         
         }
-        public DbSet<Login> logins { get; set; }
+        public DbSet<Login> Users { get; set; }
     }
 }

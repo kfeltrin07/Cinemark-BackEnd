@@ -24,26 +24,26 @@ namespace Filmovi_projekt.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Login>>> Getlogins()
         {
-          if (_context.logins == null)
+          if (_context.Users == null)
           {
-              return NotFound("Login data not found");
+              return NotFound();
           }
-            return await _context.logins.ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
         // GET: api/Logins/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Login>> GetLogin(int id)
         {
-          if (_context.logins == null)
+          if (_context.Users == null)
           {
-              return NotFound("Login data not found");
+              return NotFound();
           }
-            var login = await _context.logins.FindAsync(id);
+            var login = await _context.Users.FindAsync(id);
 
             if (login == null)
             {
-                return NotFound("Searched user not found");
+                return NotFound();
             }
 
             return login;
@@ -85,11 +85,11 @@ namespace Filmovi_projekt.Controllers
         [HttpPost]
         public async Task<ActionResult<Login>> PostLogin(Login login)
         {
-          if (_context.logins == null)
+          if (_context.Users == null)
           {
               return Problem("Entity set 'LoginContext.logins'  is null.");
           }
-            _context.logins.Add(login);
+            _context.Users.Add(login);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetLogin", new { id = login.id_user }, login);
@@ -99,17 +99,17 @@ namespace Filmovi_projekt.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLogin(int id)
         {
-            if (_context.logins == null)
+            if (_context.Users == null)
             {
-                return NotFound("Login data not found");
+                return NotFound();
             }
-            var login = await _context.logins.FindAsync(id);
+            var login = await _context.Users.FindAsync(id);
             if (login == null)
             {
-                return NotFound("Searched user not found or already deleted");
+                return NotFound();
             }
 
-            _context.logins.Remove(login);
+            _context.Users.Remove(login);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -117,7 +117,7 @@ namespace Filmovi_projekt.Controllers
 
         private bool LoginExists(int id)
         {
-            return (_context.logins?.Any(e => e.id_user == id)).GetValueOrDefault();
+            return (_context.Users?.Any(e => e.id_user == id)).GetValueOrDefault();
         }
     }
 }
