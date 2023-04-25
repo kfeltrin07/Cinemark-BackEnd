@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Filmovi.Models;
+using Microsoft.Data.SqlClient;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -85,15 +86,23 @@ namespace Filmovi_projekt.Controllers
         [HttpPost]
         public async Task<ActionResult<Login>> PostLogin(Login login)
         {
+            try { 
           if (_context.Users == null)
           {
               return Problem("Entity set 'LoginContext.logins'  is null.");
           }
             _context.Users.Add(login);
+            
             await _context.SaveChangesAsync();
-
+            
             return CreatedAtAction("GetLogin", new { id = login.id_user }, login);
-        }
+            }
+        catch (Exception) {
+
+            return BadRequest("User name postoji");
+
+            }
+          }
 
         // DELETE: api/Logins/5
         [HttpDelete("{id}")]
@@ -119,5 +128,42 @@ namespace Filmovi_projekt.Controllers
         {
             return (_context.Users?.Any(e => e.id_user == id)).GetValueOrDefault();
         }
+
+        // GET: api/Logins
+        internal bool FindByUser(Login user)
+        {
+            bool sucess = false;
+
+            string queryString = "SELECT * FROM dbo.Users WHERE username=@Username AND password=@Password";
+
+            using(SqlConnection connection=new SqlConnection("DevConnection"))
+            {
+                SqlCommand command=new SqlCommand(queryString, connection);
+
+                command.Parameters.Add("@Username",System.Data.SqlDbType.VarChar,50).Value = user.username;
+                command.Parameters.Add("@Password",System.Data.SqlDbType.VarChar,50).Value = user.password;
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows) {
+                        sucess = true;
+                    }
+                    else
+                    {
+                        sucess = false;
+                    }
+                    reader.Close();
+                }
+                catch (Exception e) 
+                { 
+                    Console.WriteLine(e.Message);
+                }
+            }
+            return sucess;
+        }
+       
     }
 }
