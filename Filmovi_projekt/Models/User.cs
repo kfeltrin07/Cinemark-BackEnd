@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Filmovi.Models
 {
-    public class Login
-    {
+    public class User {
         [Key]
         public int id_user { get; set; }
 

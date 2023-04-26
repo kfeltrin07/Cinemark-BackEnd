@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Filmovi.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Filmovi_projekt.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginsController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly LoginContext _context;
+        private readonly UserContext _context;
 
-        public LoginsController(LoginContext context)
+        public UsersController(UserContext context)
         {
             _context = context;
         }
 
         // GET: api/Logins
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Login>>> Getlogins()
+        public async Task<ActionResult<IEnumerable<User>>> Getlogins()
         {
           if (_context.Users == null)
           {
@@ -34,7 +35,7 @@ namespace Filmovi_projekt.Controllers
 
         // GET: api/Logins/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Login>> GetLogin(int id)
+        public async Task<ActionResult<User>> GetLogin(int id)
         {
           if (_context.Users == null)
           {
@@ -53,7 +54,7 @@ namespace Filmovi_projekt.Controllers
         // PUT: api/Logins/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLogin(int id, Login login)
+        public async Task<IActionResult> PutLogin(int id, User login)
         {
             if (id != login.id_user)
             {
@@ -84,7 +85,7 @@ namespace Filmovi_projekt.Controllers
         // POST: api/Logins
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Login>> PostLogin(Login login)
+        public async Task<ActionResult<User>> PostLogin(User login)
         {
             try { 
           if (_context.Users == null)
@@ -129,41 +130,34 @@ namespace Filmovi_projekt.Controllers
             return (_context.Users?.Any(e => e.id_user == id)).GetValueOrDefault();
         }
 
-        // GET: api/Logins
-        internal bool FindByUser(Login user)
+        // GET: api/Logins/Login
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] User login)
         {
-            bool sucess = false;
-
-            string queryString = "SELECT * FROM dbo.Users WHERE username=@Username AND password=@Password";
-
-            using(SqlConnection connection=new SqlConnection("DevConnection"))
+            if (login == null)
+                return BadRequest();
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.username == login.username && x.password == login.password);
+            if (user == null)
+                return NotFound(new { Message = "User not Found" });
+            return Ok(new
             {
-                SqlCommand command=new SqlCommand(queryString, connection);
-
-                command.Parameters.Add("@Username",System.Data.SqlDbType.VarChar,50).Value = user.username;
-                command.Parameters.Add("@Password",System.Data.SqlDbType.VarChar,50).Value = user.password;
-
-                try
-                {
-                    connection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    if (reader.HasRows) {
-                        sucess = true;
-                    }
-                    else
-                    {
-                        sucess = false;
-                    }
-                    reader.Close();
-                }
-                catch (Exception e) 
-                { 
-                    Console.WriteLine(e.Message);
-                }
-            }
-            return sucess;
+                Message = "Login Sucess!"
+            });
         }
-       
+
+        // GET: api/Logins/register
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] User login)
+        {
+            if (login == null)
+                return BadRequest();
+            await _context.Users.AddAsync(login);
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                Message = "User Registered!"
+            });
+        }
+
     }
 }

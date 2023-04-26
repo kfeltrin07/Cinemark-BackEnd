@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Filmovi_projekt.Migrations
 {
-    [DbContext(typeof(LoginContext))]
+    [DbContext(typeof(UserContext))]
     [Migration("20230421112811_InitialCreate")]
     partial class InitialCreate
     {

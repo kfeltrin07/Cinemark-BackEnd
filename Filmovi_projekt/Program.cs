@@ -1,6 +1,7 @@
 using Filmovi.Models;
 using Filmovi_projekt.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +13,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<LoginContext>(options =>
+builder.Services.AddDbContext<UserContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
+
 
 builder.Services.AddDbContext<FilmsContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
@@ -51,6 +53,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(myAllowSpecificOrigins);
+app.UseAuthentication();;
 
 app.UseAuthorization();
 
