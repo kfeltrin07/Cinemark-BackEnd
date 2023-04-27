@@ -1,0 +1,36 @@
+// FindByUser: api/Logins
+        internal async Task<IActionResult> FindByUser(User user)
+        {
+            bool sucess = false;
+
+            string queryString = "SELECT * FROM dbo.Users WHERE username=@Username AND password=@Password";
+            await _context.SaveChangesAsync();
+            using (SqlConnection connection=new SqlConnection("DevConnection"))
+            {
+                SqlCommand command=new SqlCommand(queryString, connection);
+
+                command.Parameters.Add("@Username",System.Data.SqlDbType.VarChar,50).Value = user.username;
+                command.Parameters.Add("@Password",System.Data.SqlDbType.VarChar,50).Value = user.password;
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows) {
+                        sucess = true;
+                    }
+                    else
+                    {
+                        sucess = false;
+                    }
+                    reader.Close();
+                }
+                catch (Exception e) 
+                { 
+                    Console.WriteLine(e.Message);
+                }
+                await _context.SaveChangesAsync();
+            }
+            return NoContent();
+        }
