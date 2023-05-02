@@ -29,5 +29,7 @@ namespace Filmovi_projekt.Models
 
         [Column(TypeName = "varchar(500)")]
         public string video_url { get; set; }
+        [Column(TypeName = "float")]
+        public float total_rating { get; set; }
     }
 }
