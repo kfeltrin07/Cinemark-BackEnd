@@ -1,0 +1,44 @@
+image: docker:latest
+services: 
+  - docker:dind
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      variables:
+        SERVER_KEY: "${SERVER_KEY}"
+        SERVER_IP: "${SERVER_IP}"
+        DOCKER_IMAGE_NAME: "registry.gitlab.com/serengetitech-praksa-2023/movie-review/api:latest"
+
+stages:     
+  - cleanup     
+  - build
+  - push
+  - deploy
+
+Clean Cache:
+  stage: cleanup
+  script:
+    - rm -rf "%CACHE_PATH%/%CI_PIPELINE_ID%"
+  when: always
+
+Dockerize:  
+  stage: build
+  needs: ["Clean Cache"]
+  script:
+    - docker build -t $DOCKER_IMAGE_NAME .
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker push $DOCKER_IMAGE_NAME
+    - docker image rm $DOCKER_IMAGE_NAME
+
+Deploy To Server:   
+  stage: deploy
+  needs: ["Dockerize"]
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "${SERVER_KEY}" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -o StrictHostKeyChecking=no worker@$SERVER_IP -p 59 "docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD & sh /home/worker/cinemark/deploy-api.sh"
+
