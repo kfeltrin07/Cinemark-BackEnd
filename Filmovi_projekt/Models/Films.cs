@@ -31,5 +31,7 @@ namespace Filmovi_projekt.Models
         public string video_url { get; set; }
         [Column(TypeName = "float")]
         public float total_rating { get; set; }
+        [Column(TypeName = "int")]
+        public float rating_count { get; set; }
     }
 }
