@@ -10,6 +10,6 @@ namespace Filmovi_projekt.Models
         {
 
         }
-        public DbSet<Bookmark> Bookmarks { get; set; }
+        public DbSet<Bookmark> Bookmark { get; set; }
     }
 }

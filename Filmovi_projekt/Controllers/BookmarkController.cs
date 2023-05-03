@@ -11,11 +11,11 @@ namespace Filmovi_projekt.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookmarksController : ControllerBase
+    public class BookmarkController : ControllerBase
     {
         private readonly BookmarkContext _context;
 
-        public BookmarksController(BookmarkContext context)
+        public BookmarkController(BookmarkContext context)
         {
             _context = context;
         }
@@ -24,22 +24,22 @@ namespace Filmovi_projekt.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bookmark>>> GetBookmarks()
         {
-          if (_context.Bookmarks == null)
+          if (_context.Bookmark == null)
           {
               return NotFound();
           }
-            return await _context.Bookmarks.ToListAsync();
+            return await _context.Bookmark.ToListAsync();
         }
 
         // GET: api/Bookmarks/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Bookmark>> GetBookmark(int id)
         {
-          if (_context.Bookmarks == null)
+          if (_context.Bookmark == null)
           {
               return NotFound();
           }
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var bookmark = await _context.Bookmark.FindAsync(id);
 
             if (bookmark == null)
             {
@@ -85,11 +85,11 @@ namespace Filmovi_projekt.Controllers
         [HttpPost]
         public async Task<ActionResult<Bookmark>> PostBookmark(Bookmark bookmark)
         {
-          if (_context.Bookmarks == null)
+          if (_context.Bookmark == null)
           {
               return Problem("Entity set 'BookmarkContext.Bookmarks'  is null.");
           }
-            _context.Bookmarks.Add(bookmark);
+            _context.Bookmark.Add(bookmark);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetBookmark", new { id = bookmark.id_Bookmark }, bookmark);
@@ -99,17 +99,17 @@ namespace Filmovi_projekt.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBookmark(int id)
         {
-            if (_context.Bookmarks == null)
+            if (_context.Bookmark == null)
             {
                 return NotFound();
             }
-            var bookmark = await _context.Bookmarks.FindAsync(id);
+            var bookmark = await _context.Bookmark.FindAsync(id);
             if (bookmark == null)
             {
                 return NotFound();
             }
 
-            _context.Bookmarks.Remove(bookmark);
+            _context.Bookmark.Remove(bookmark);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -117,7 +117,22 @@ namespace Filmovi_projekt.Controllers
 
         private bool BookmarkExists(int id)
         {
-            return (_context.Bookmarks?.Any(e => e.id_Bookmark == id)).GetValueOrDefault();
+            return (_context.Bookmark?.Any(e => e.id_Bookmark == id)).GetValueOrDefault();
+        }
+
+        // GET: api/Bookmark/Find
+        [HttpPost("Find")]
+        public async Task<IActionResult> Authenticate([FromBody] Bookmark login)
+        {
+            if (login == null)
+                return BadRequest();
+            var user = await _context.Bookmark.FirstOrDefaultAsync(x => x.id_user == login.id_user && x.id_film == login.id_film);
+            if (user != null)
+                return NotFound(new { Message = "Bookmark not Found" });
+            return Ok(new
+            {
+                
+            });
         }
     }
 }
