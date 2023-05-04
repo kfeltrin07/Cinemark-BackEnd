@@ -120,19 +120,41 @@ namespace Filmovi_projekt.Controllers
             return (_context.Bookmark?.Any(e => e.id_Bookmark == id)).GetValueOrDefault();
         }
 
-        // GET: api/Bookmark/Find
-        [HttpPost("Find")]
-        public async Task<IActionResult> Authenticate([FromBody] Bookmark login)
+        // GET: api/Bookmark/find
+        [HttpPost("find")]
+        public async Task<IActionResult> Authenticate([FromBody] Bookmark bookmark)
         {
-            if (login == null)
+            if (bookmark == null)
                 return BadRequest();
-            var user = await _context.Bookmark.FirstOrDefaultAsync(x => x.id_user == login.id_user && x.id_film == login.id_film);
-            if (user != null)
-                return NotFound(new { Message = "Bookmark not Found" });
-            return Ok(new
+         
+            var selected = await _context.Bookmark.FirstOrDefaultAsync(x => x.id_user == bookmark.id_user && x.id_film == bookmark.id_film);
+            if (selected != null)
+                {
+                _context.Bookmark.Remove(selected);
+                await _context.SaveChangesAsync();
+                return NotFound(false);
+            }
+            return Ok();
+            
+            
+
+        }
+        // GET: api/Bookmarks/ByUser
+        [HttpOptions("ByUser")]
+        public async Task<ActionResult<Bookmark>> ByUser([FromBody] Bookmark bookmark)
+        {
+            if (bookmark == null)
             {
-                
-            });
+                return NotFound();
+            }
+            var selected = await _context.Bookmark.FindAsync(bookmark.id_user);
+
+            if (selected == null)
+            {
+                return NotFound();
+            }
+
+            return selected;
         }
     }
 }
