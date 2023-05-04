@@ -24,14 +24,14 @@ namespace Filmovi_projekt.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Rating>>> GetRating()
         {
-            return await _context.Rating.ToListAsync();
+            return await _context.Ratings.ToListAsync();
         }
 
         // GET: api/Ratings/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Rating>> GetRating(int id)
         {
-            var rating = await _context.Rating.FindAsync(id);
+            var rating = await _context.Ratings.FindAsync(id);
 
             if (rating == null)
             {
@@ -77,7 +77,7 @@ namespace Filmovi_projekt.Controllers
         [HttpPost]
         public async Task<ActionResult<Rating>> PostRating(Rating rating)
         {
-            _context.Rating.Add(rating);
+            _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRating", new { id = rating.id_rating }, rating);
@@ -87,13 +87,13 @@ namespace Filmovi_projekt.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRating(int id)
         {
-            var rating = await _context.Rating.FindAsync(id);
+            var rating = await _context.Ratings.FindAsync(id);
             if (rating == null)
             {
                 return NotFound();
             }
 
-            _context.Rating.Remove(rating);
+            _context.Ratings.Remove(rating);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -101,7 +101,7 @@ namespace Filmovi_projekt.Controllers
 
         private bool RatingExists(int id)
         {
-            return _context.Rating.Any(e => e.id_rating == id);
+            return _context.Ratings.Any(e => e.id_rating == id);
         }
     }
 }

@@ -10,6 +10,6 @@ namespace Filmovi_projekt.Models
         {
 
         }
-        public DbSet<Rating> Rating { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
     }
 }
