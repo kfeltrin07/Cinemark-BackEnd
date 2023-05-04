@@ -13,14 +13,5 @@ namespace Filmovi_projekt.Models
 
         [Column (TypeName = "varchar(255)")]
         public string description { get; set; }
-
-        [Column (TypeName = "int")] 
-        public int id_user { get; set; }
-
-        [Column (TypeName = "DateTime")] 
-        public DateTime change_date { get; set; }
-
-        [Column (TypeName = "DateTime")]
-        public DateTime insert_date { get; set; }
     }
 }
