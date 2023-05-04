@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Filmovi.Models
+namespace Filmovi_projekt.Models
 {
     public class User {
         [Key]

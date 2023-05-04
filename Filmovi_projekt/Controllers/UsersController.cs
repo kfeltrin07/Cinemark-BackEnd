@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Filmovi.Models;
+using Filmovi_projekt.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc.Routing;
 
@@ -141,7 +141,7 @@ namespace Filmovi_projekt.Controllers
                 return NotFound(new { Message = "User not Found" });
             return Ok(new
             {
-                Message = "Login Sucess!"
+                user.id_user
             });
         }
 

@@ -1,4 +1,3 @@
-using Filmovi.Models;
 using Filmovi_projekt.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -32,13 +31,18 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection"))
 builder.Services.AddDbContext<Film_GenreContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
 
+builder.Services.AddDbContext<RatingContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name:myAllowSpecificOrigins,builder=>
 
-   { builder.WithOrigins("http://localhost:4200")
-   .AllowAnyMethod()
-   .AllowAnyHeader(); });
+   { builder.WithOrigins("http://localhost:4200");
+       builder.AllowAnyMethod();
+       builder.AllowAnyHeader();
+       builder.AllowCredentials();
+   });
 });
 
 var app = builder.Build();

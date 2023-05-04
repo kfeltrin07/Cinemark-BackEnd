@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Filmovi_projekt.Models;
 
-namespace Filmovi.Models
+namespace Filmovi_projekt.Models
 {
     public class UserContext:DbContext
     {
