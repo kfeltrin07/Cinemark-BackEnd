@@ -24,22 +24,22 @@ namespace Filmovi_projekt.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Genre>>> GetGenres()
         {
-          if (_context.Genres == null)
+          if (_context.Genre == null)
           {
               return NotFound();
           }
-            return await _context.Genres.ToListAsync();
+            return await _context.Genre.ToListAsync();
         }
 
         // GET: api/Genres/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Genre>> GetGenre(int id)
         {
-          if (_context.Genres == null)
+          if (_context.Genre == null)
           {
               return NotFound();
           }
-            var genre = await _context.Genres.FindAsync(id);
+            var genre = await _context.Genre.FindAsync(id);
 
             if (genre == null)
             {
@@ -85,11 +85,11 @@ namespace Filmovi_projekt.Controllers
         [HttpPost]
         public async Task<ActionResult<Genre>> PostGenre(Genre genre)
         {
-          if (_context.Genres == null)
+          if (_context.Genre == null)
           {
               return Problem("Entity set 'GenreContext.Genres'  is null.");
           }
-            _context.Genres.Add(genre);
+            _context.Genre.Add(genre);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetGenre", new { id = genre.id_genre }, genre);
@@ -99,17 +99,17 @@ namespace Filmovi_projekt.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGenre(int id)
         {
-            if (_context.Genres == null)
+            if (_context.Genre == null)
             {
                 return NotFound();
             }
-            var genre = await _context.Genres.FindAsync(id);
+            var genre = await _context.Genre.FindAsync(id);
             if (genre == null)
             {
                 return NotFound();
             }
 
-            _context.Genres.Remove(genre);
+            _context.Genre.Remove(genre);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -117,7 +117,7 @@ namespace Filmovi_projekt.Controllers
 
         private bool GenreExists(int id)
         {
-            return (_context.Genres?.Any(e => e.id_genre == id)).GetValueOrDefault();
+            return (_context.Genre?.Any(e => e.id_genre == id)).GetValueOrDefault();
         }
     }
 }
