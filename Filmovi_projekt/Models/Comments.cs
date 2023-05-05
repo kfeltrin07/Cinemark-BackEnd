@@ -9,8 +9,9 @@ namespace Filmovi_projekt.Models
         [Key]
         public int id_comment { get; set; }
 
+        [Column(TypeName = "int")]
         public int id_user { get; set; }
-
+        [Column(TypeName = "int")]
         public int id_film { get; set; }
 
         [Column (TypeName = "varchar(255)")]
