@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Filmovi_projekt.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Filmovi_projekt.Helpers;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -92,8 +93,9 @@ namespace Filmovi_projekt.Controllers
           {
               return Problem("Entity set 'LoginContext.logins'  is null.");
           }
-            _context.Users.Add(login);
-            
+          login.password=PasswordHasher.HashPassword(login.password);
+
+            await _context.Users.AddAsync(login);
             await _context.SaveChangesAsync();
             
             return CreatedAtAction("GetLogin", new { id = login.id_user }, login);
@@ -136,9 +138,15 @@ namespace Filmovi_projekt.Controllers
         {
             if (login == null)
                 return BadRequest();
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.username == login.username && x.password == login.password);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.username == login.username);
             if (user == null)
                 return NotFound(new { Message = "User not Found" });
+
+            if(!PasswordHasher.VerifyPassword(login.password, user.password))
+            {
+                return BadRequest(new { Message = "Password is incorrect" });
+            }
+
             return Ok(new
             {
                 user.id_user
