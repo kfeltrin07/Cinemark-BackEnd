@@ -15,5 +15,11 @@ namespace Filmovi_projekt.Models
 
         [Column (TypeName = "nvarchar(255)")]
         public string email { get; set; }
+
+        [Column(TypeName = "bit")]
+        public Boolean verified { get; set; }
+
+        [Column(TypeName = "nvarchar(50)")]
+        public string activation_code { get; set; }
     }
 }
