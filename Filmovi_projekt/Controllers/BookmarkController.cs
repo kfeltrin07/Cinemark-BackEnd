@@ -156,5 +156,20 @@ namespace Filmovi_projekt.Controllers
 
             return selected;
         }
+        // GET: api/Bookmark/check
+        [HttpPost("check")]
+        public async Task<IActionResult> Check([FromBody] Bookmark bookmark)
+        {
+            if (bookmark == null)
+                return BadRequest();
+
+            var selected = await _context.Bookmark.FirstOrDefaultAsync(x => x.id_user == bookmark.id_user && x.id_film == bookmark.id_film);
+            if (selected == null)
+            {
+                
+                return NotFound(false);
+            }
+            return Ok(true);
+        }
     }
 }
