@@ -9,6 +9,12 @@ using Filmovi_projekt.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Filmovi_projekt.Helpers;
+using System.Data;
+using System.Net.Mail;
+using System.Net;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -157,15 +163,56 @@ namespace Filmovi_projekt.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] User login)
         {
+            string pageURL = HttpContext.Request.Query["baseURL"]; //HttpContext.Request.Path; 
+
             if (login == null)
                 return BadRequest();
+
+            string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
+            login.activation_code = activationCode;
+
             await _context.Users.AddAsync(login);
             await _context.SaveChangesAsync();
+            await SendEmailAsync(login, pageURL);
             return Ok(new
             {
                 Message = "User Registered!"
             });
         }
 
+        private async Task SendEmailAsync(User login, string pageURL)
+        {
+
+            using (MailMessage mm = new MailMessage("from","to"))
+            {
+                string pageUrl = pageURL + login.activation_code;
+                mm.Subject = "Account Activation";
+                string body = "Hello " + login.username.Trim() + ",";
+                body += "<br /><br />Please click the following link to activate your account";
+                body += "<br /><a href=\""+pageUrl+"\">Activate account</a> ";
+                body += "<br /><br />Thanks";
+                mm.Body = body;
+                mm.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com",587))
+                {
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential("username", "password");
+                    smtp.EnableSsl = true;
+                    await smtp.SendMailAsync(mm);
+                }
+              
+            }
+        }
     }
 }
+/*
+ * {
+  "id_user": 0,
+  "username": "asd",
+  "password": "A_sad__y3ds",
+  "email": "asd",
+  "verified": false,
+  "activation_code": "ASCGHJVCZW"
+}
+*/
