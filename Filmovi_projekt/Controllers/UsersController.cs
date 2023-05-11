@@ -94,7 +94,7 @@ namespace Filmovi_projekt.Controllers
               return Problem("Entity set 'LoginContext.logins'  is null.");
           }
           login.password=PasswordHasher.HashPassword(login.password);
-
+          login.role = 0;
             await _context.Users.AddAsync(login);
             await _context.SaveChangesAsync();
             
@@ -149,8 +149,8 @@ namespace Filmovi_projekt.Controllers
 
             return Ok(new
             {
-                user.id_user
-            });
+                user
+            }) ;
         }
 
         // GET: api/Logins/register
