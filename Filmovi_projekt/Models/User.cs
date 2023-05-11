@@ -5,6 +5,7 @@ namespace Filmovi_projekt.Models
 {
     public class User {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int id_user { get; set; }
 
         [Column (TypeName = "nvarchar(255)")]
@@ -21,5 +22,8 @@ namespace Filmovi_projekt.Models
 
         [Column(TypeName = "nvarchar(50)")]
         public string activation_code { get; set; }
+
+        [Column(TypeName = "int")]
+        public int role { get; set; }
     }
 }

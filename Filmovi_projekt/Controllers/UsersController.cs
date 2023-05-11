@@ -165,7 +165,6 @@ namespace Filmovi_projekt.Controllers
         {
             string origin = Request.Headers["Origin"];
             Uri uri = new Uri(origin);
-
            
             string pageURL = uri.ToString();
 
@@ -175,9 +174,11 @@ namespace Filmovi_projekt.Controllers
             string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
+            login.role = 0;
 
-            await _context.Users.AddAsync(login);
+            _context.Users.Add(login);
             await _context.SaveChangesAsync();
+
             await SendEmailAsync(login, pageURL);
             return Ok(new
             {
@@ -187,9 +188,9 @@ namespace Filmovi_projekt.Controllers
 
         private async Task SendEmailAsync(User login, string pageURL)
         {
-            using (MailMessage mm = new MailMessage("from", login.email))
+            using (MailMessage mm = new MailMessage("sender", login.email))
             {
-                string pageUrl = pageURL + login.activation_code;
+                string pageUrl = pageURL +"login?activate="+ login.activation_code + "&id=" + login.id_user;
                 mm.Subject = "Account Activation";
                 string body = "Hello " + login.username.Trim() + ",";
                 body += "<br /><br />Please click the following link to activate your account";
@@ -201,13 +202,28 @@ namespace Filmovi_projekt.Controllers
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com",587))
                 {
                     smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential("from", "password");
+                    smtp.Credentials = new NetworkCredential("sender", "password");
                     smtp.EnableSsl = true;
                     await smtp.SendMailAsync(mm);
                 }
               
             }
         }
+
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateUser(string activationCode, int idUser)
+        {
+            var user = await _context.Users.FindAsync(idUser);
+            if (user == null || user.activation_code != activationCode)
+                return BadRequest();
+            user.verified = true;
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                Message = "User Activated!"
+            });
+        }
+        
     }
 }
 
