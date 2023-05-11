@@ -163,12 +163,17 @@ namespace Filmovi_projekt.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] User login)
         {
-            string pageURL = HttpContext.Request.Query["baseURL"]; //HttpContext.Request.Path; 
+            string origin = Request.Headers["Origin"];
+            Uri uri = new Uri(origin);
+
+           
+            string pageURL = uri.ToString();
 
             if (login == null)
                 return BadRequest();
 
             string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
+            login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
 
             await _context.Users.AddAsync(login);
@@ -182,8 +187,7 @@ namespace Filmovi_projekt.Controllers
 
         private async Task SendEmailAsync(User login, string pageURL)
         {
-
-            using (MailMessage mm = new MailMessage("from","to"))
+            using (MailMessage mm = new MailMessage("from", login.email))
             {
                 string pageUrl = pageURL + login.activation_code;
                 mm.Subject = "Account Activation";
@@ -197,7 +201,7 @@ namespace Filmovi_projekt.Controllers
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com",587))
                 {
                     smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential("username", "password");
+                    smtp.Credentials = new NetworkCredential("from", "password");
                     smtp.EnableSsl = true;
                     await smtp.SendMailAsync(mm);
                 }
@@ -206,13 +210,4 @@ namespace Filmovi_projekt.Controllers
         }
     }
 }
-/*
- * {
-  "id_user": 0,
-  "username": "asd",
-  "password": "A_sad__y3ds",
-  "email": "asd",
-  "verified": false,
-  "activation_code": "ASCGHJVCZW"
-}
-*/
+
