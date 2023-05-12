@@ -33,10 +33,10 @@ namespace Filmovi_projekt.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> Getlogins()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             return await _context.Users.ToListAsync();
         }
 
@@ -44,10 +44,10 @@ namespace Filmovi_projekt.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetLogin(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             var login = await _context.Users.FindAsync(id);
 
             if (login == null)
@@ -94,24 +94,26 @@ namespace Filmovi_projekt.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostLogin(User login)
         {
-            try { 
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'LoginContext.logins'  is null.");
-          }
-          login.password=PasswordHasher.HashPassword(login.password);
-          login.role = 0;
-            await _context.Users.AddAsync(login);
-            await _context.SaveChangesAsync();
-            
-            return CreatedAtAction("GetLogin", new { id = login.id_user }, login);
-            }
-        catch (Exception) {
+            try
+            {
+                if (_context.Users == null)
+                {
+                    return Problem("Entity set 'LoginContext.logins'  is null.");
+                }
+                login.password = PasswordHasher.HashPassword(login.password);
 
-            return BadRequest("User name postoji");
+                await _context.Users.AddAsync(login);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetLogin", new { id = login.id_user }, login);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest("User name postoji");
 
             }
-          }
+        }
 
         // DELETE: api/Logins/5
         [HttpDelete("{id}")]
@@ -148,15 +150,15 @@ namespace Filmovi_projekt.Controllers
             if (user == null)
                 return NotFound(new { Message = "User not Found" });
 
-            if(!PasswordHasher.VerifyPassword(login.password, user.password))
+            if (!PasswordHasher.VerifyPassword(login.password, user.password))
             {
                 return BadRequest(new { Message = "Password is incorrect" });
             }
 
             return Ok(new
             {
-                user
-            }) ;
+                user.id_user
+            });
         }
 
         // GET: api/Logins/register
@@ -166,27 +168,28 @@ namespace Filmovi_projekt.Controllers
             bool sentMail = false;
             string origin = Request.Headers["Origin"];
             Uri uri = new Uri(origin);
-           
+
             string pageURL = uri.ToString();
 
             if (login == null)
                 return BadRequest("User info is empty");
 
-            string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
+            string activationCode = Guid.NewGuid().ToString("N").Substring(0, 25);
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
             login.role = 0;
 
             _context.Users.Add(login);
             await _context.SaveChangesAsync();
-           
+
             sentMail = await SendEmailAsync(login, pageURL);
 
             if (sentMail)
             {
                 return Ok("User Registered!");
             }
-            else {
+            else
+            {
                 _context.Users.Remove(login);
                 await _context.SaveChangesAsync();
                 return BadRequest("Email doesn't exist");
@@ -229,11 +232,12 @@ namespace Filmovi_projekt.Controllers
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 sentMail = false;
             }
-           
-                return sentMail;
+
+            return sentMail;
         }
 
         [HttpPost("activate")]
@@ -249,7 +253,7 @@ namespace Filmovi_projekt.Controllers
                 Message = "User Activated!"
             });
         }
-        
+
     }
 }
 
