@@ -15,6 +15,8 @@ namespace Filmovi_projekt.Models
 
         [Column (TypeName = "nvarchar(255)")]
         public string email { get; set; }
+        [Column(TypeName = "nvarchar(255)")]
+        public string token { get; set; }
 
         [Column(TypeName = "int")]
         public int role { get; set; }
