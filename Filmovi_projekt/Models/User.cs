@@ -19,15 +19,12 @@ namespace Filmovi_projekt.Models
         [Column(TypeName = "nvarchar(255)")]
         public string token { get; set; }
 
-<<<<<<< HEAD
-=======
         [Column(TypeName = "bit")]
         public Boolean verified { get; set; }
 
         [Column(TypeName = "nvarchar(50)")]
         public string activation_code { get; set; }
 
->>>>>>> verifikacija-maila
         [Column(TypeName = "int")]
         public int role { get; set; }
     }
