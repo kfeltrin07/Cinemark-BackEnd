@@ -163,13 +163,14 @@ namespace Filmovi_projekt.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] User login)
         {
+            bool sentMail = false;
             string origin = Request.Headers["Origin"];
             Uri uri = new Uri(origin);
            
             string pageURL = uri.ToString();
 
             if (login == null)
-                return BadRequest();
+                return BadRequest("User info is empty");
 
             string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
             login.password = PasswordHasher.HashPassword(login.password);
@@ -178,36 +179,61 @@ namespace Filmovi_projekt.Controllers
 
             _context.Users.Add(login);
             await _context.SaveChangesAsync();
+           
+            sentMail = await SendEmailAsync(login, pageURL);
 
-            await SendEmailAsync(login, pageURL);
-            return Ok(new
+            if (sentMail)
             {
-                Message = "User Registered!"
-            });
+                return Ok("User Registered!");
+            }
+            else {
+                _context.Users.Remove(login);
+                await _context.SaveChangesAsync();
+                return BadRequest("Email doesn't exist");
+            }
+
         }
 
-        private async Task SendEmailAsync(User login, string pageURL)
+        private async Task<bool> SendEmailAsync(User login, string pageURL)
         {
-            using (MailMessage mm = new MailMessage("sender", login.email))
+            bool sentMail = false;
+            try
             {
-                string pageUrl = pageURL +"login?activate="+ login.activation_code + "&id=" + login.id_user;
-                mm.Subject = "Account Activation";
-                string body = "Hello " + login.username.Trim() + ",";
-                body += "<br /><br />Please click the following link to activate your account";
-                body += "<br /><a href=\""+pageUrl+"\">Activate account</a> ";
-                body += "<br /><br />Thanks";
-                mm.Body = body;
-                mm.IsBodyHtml = true;
-
-                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com",587))
+                using (MailMessage mm = new MailMessage("ebaukovac@student.foi.hr", login.email))
                 {
-                    smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential("sender", "password");
-                    smtp.EnableSsl = true;
-                    await smtp.SendMailAsync(mm);
+                    string pageUrl = pageURL + "login?activate=" + login.activation_code + "&idUser=" + login.id_user;
+                    mm.Subject = "Account Activation";
+                    string body = "Hello " + login.username.Trim() + ",";
+                    body += "<br /><br />Please click the following link to activate your account";
+                    body += "<br /><a href=\"" + pageUrl + "\">Activate account</a> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+
+                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtp.UseDefaultCredentials = false;
+                        smtp.Credentials = new NetworkCredential("ebaukovac@student.foi.hr", "myzvfmfyqnhrpasm");
+                        smtp.EnableSsl = true;
+                        try
+                        {
+                            await smtp.SendMailAsync(mm);
+                            sentMail = true;
+                        }
+                        catch (SmtpFailedRecipientException ex)
+                        {
+                            sentMail = false;
+                        }
+
+
+                    }
                 }
-              
             }
+            catch (Exception ex) {
+                sentMail = false;
+            }
+           
+                return sentMail;
         }
 
         [HttpPost("activate")]
