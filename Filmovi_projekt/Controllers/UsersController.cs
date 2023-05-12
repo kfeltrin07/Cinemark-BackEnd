@@ -9,6 +9,12 @@ using Filmovi_projekt.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Filmovi_projekt.Helpers;
+using System.Data;
+using System.Net.Mail;
+using System.Net;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -157,15 +163,93 @@ namespace Filmovi_projekt.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] User login)
         {
+            bool sentMail = false;
+            string origin = Request.Headers["Origin"];
+            Uri uri = new Uri(origin);
+           
+            string pageURL = uri.ToString();
+
             if (login == null)
+                return BadRequest("User info is empty");
+
+            string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
+            login.password = PasswordHasher.HashPassword(login.password);
+            login.activation_code = activationCode;
+            login.role = 0;
+
+            _context.Users.Add(login);
+            await _context.SaveChangesAsync();
+           
+            sentMail = await SendEmailAsync(login, pageURL);
+
+            if (sentMail)
+            {
+                return Ok("User Registered!");
+            }
+            else {
+                _context.Users.Remove(login);
+                await _context.SaveChangesAsync();
+                return BadRequest("Email doesn't exist");
+            }
+
+        }
+
+        private async Task<bool> SendEmailAsync(User login, string pageURL)
+        {
+            bool sentMail = false;
+            try
+            {
+                using (MailMessage mm = new MailMessage("ebaukovac@student.foi.hr", login.email))
+                {
+                    string pageUrl = pageURL + "login?activate=" + login.activation_code + "&idUser=" + login.id_user;
+                    mm.Subject = "Account Activation";
+                    string body = "Hello " + login.username.Trim() + ",";
+                    body += "<br /><br />Please click the following link to activate your account";
+                    body += "<br /><a href=\"" + pageUrl + "\">Activate account</a> ";
+                    body += "<br /><br />Thanks";
+                    mm.Body = body;
+                    mm.IsBodyHtml = true;
+
+                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtp.UseDefaultCredentials = false;
+                        smtp.Credentials = new NetworkCredential("ebaukovac@student.foi.hr", "myzvfmfyqnhrpasm");
+                        smtp.EnableSsl = true;
+                        try
+                        {
+                            await smtp.SendMailAsync(mm);
+                            sentMail = true;
+                        }
+                        catch (SmtpFailedRecipientException ex)
+                        {
+                            sentMail = false;
+                        }
+
+
+                    }
+                }
+            }
+            catch (Exception ex) {
+                sentMail = false;
+            }
+           
+                return sentMail;
+        }
+
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateUser(string activationCode, int idUser)
+        {
+            var user = await _context.Users.FindAsync(idUser);
+            if (user == null || user.activation_code != activationCode)
                 return BadRequest();
-            await _context.Users.AddAsync(login);
+            user.verified = true;
             await _context.SaveChangesAsync();
             return Ok(new
             {
-                Message = "User Registered!"
+                Message = "User Activated!"
             });
         }
-
+        
     }
 }
+
