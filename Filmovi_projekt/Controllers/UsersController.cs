@@ -172,27 +172,32 @@ namespace Filmovi_projekt.Controllers
             string pageURL = uri.ToString();
 
             if (login == null)
-                return BadRequest("User info is empty");
+                return BadRequest(new { Message = "User info is empty" });
 
             string activationCode = Guid.NewGuid().ToString("N").Substring(0, 25);
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
             login.role = 0;
 
-            _context.Users.Add(login);
-            await _context.SaveChangesAsync();
-
+            try
+            {
+                _context.Users.Add(login);
+                await _context.SaveChangesAsync();
+            }
+            catch { 
+                return BadRequest(new { Message = "Conflict in database" });
+            }
             sentMail = await SendEmailAsync(login, pageURL);
 
             if (sentMail)
             {
-                return Ok("User Registered!");
+                return Ok(new { Message = "User registered" });
             }
             else
             {
                 _context.Users.Remove(login);
                 await _context.SaveChangesAsync();
-                return BadRequest("Email doesn't exist");
+                return BadRequest(new { Message = "Email doesn't exist" });
             }
 
         }
@@ -232,7 +237,7 @@ namespace Filmovi_projekt.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 sentMail = false;
             }
