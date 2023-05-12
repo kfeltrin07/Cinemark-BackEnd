@@ -14,7 +14,7 @@ namespace Filmovi_projekt.Models
         [Column(TypeName = "int")]
         public int id_film { get; set; }
 
-        [Column (TypeName = "varchar(255)")]
+        [Column (TypeName = "varchar(MAX)")]
         public string comment { get; set; }
 
         [Column (TypeName = "DateTime NULL")]
