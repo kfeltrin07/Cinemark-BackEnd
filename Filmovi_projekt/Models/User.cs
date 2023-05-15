@@ -24,8 +24,7 @@ namespace Filmovi_projekt.Models
         [Column(TypeName = "nvarchar(50)")]
         public string activation_code { get; set; }
 
-        [Column(TypeName = "int")]
-        public int role { get; set; }
+        public string role { get; set; }
 
         public string token { get; set; }
 
