@@ -13,7 +13,7 @@ namespace Filmovi_projekt.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().ToTable("users");
+            modelBuilder.Entity<User>().ToTable("Users");
         }
     }
 }
