@@ -72,6 +72,7 @@ namespace Filmovi_projekt.Controllers
 
             try
             {
+                login.password = PasswordHasher.HashPassword(login.password);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
