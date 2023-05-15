@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Filmovi_projekt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -21,6 +22,7 @@ namespace Filmovi_projekt.Controllers
         }
 
         // GET: api/Bookmarks
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Bookmark>>> GetBookmarks()
         {
@@ -121,6 +123,7 @@ namespace Filmovi_projekt.Controllers
         }
 
         // GET: api/Bookmark/find
+        [Authorize]
         [HttpPost("find")]
         public async Task<IActionResult> Authenticate([FromBody] Bookmark bookmark)
         {
@@ -140,6 +143,7 @@ namespace Filmovi_projekt.Controllers
 
         }
         // GET: api/Bookmarks/ByUser
+        [Authorize]
         [HttpOptions("ByUser")]
         public async Task<ActionResult<Bookmark>> ByUser([FromBody] Bookmark bookmark)
         {
