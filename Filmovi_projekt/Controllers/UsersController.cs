@@ -157,7 +157,7 @@ namespace Filmovi_projekt.Controllers
 
             return Ok(new
             {
-                user.id_user
+                user
             });
         }
 
