@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Filmovi_projekt.Helpers;
+using Filmovi_projekt.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Filmovi_projekt.Models;
-using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Filmovi_projekt.Helpers;
-using System.Data;
-using System.Net.Mail;
 using System.Net;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Net.Mail;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -148,18 +137,16 @@ namespace Filmovi_projekt.Controllers
             if (login == null)
                 return BadRequest();
             var user = await _context.Users.FirstOrDefaultAsync(x => x.username == login.username);
+            
             if (user == null)
                 return NotFound(new { Message = "User not Found" });
-
-            if (!PasswordHasher.VerifyPassword(login.password, user.password))
-            {
+            else if (!PasswordHasher.VerifyPassword(login.password, user.password))
                 return BadRequest(new { Message = "Password is incorrect" });
-            }
+            else if (user.verified == false)
+                return BadRequest(new { Message = "User is not activated" });
+            else
+                return Ok(new { user });
 
-            return Ok(new
-            {
-                user
-            });
         }
 
         // GET: api/Logins/register
