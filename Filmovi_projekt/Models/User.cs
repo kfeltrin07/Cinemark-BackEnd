@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Filmovi_projekt.Models
@@ -21,15 +21,19 @@ namespace Filmovi_projekt.Models
         [Column(TypeName = "bit")]
         public Boolean verified { get; set; }
 
+        [Column(TypeName = "nvarchar(50)")]
         public string activation_code { get; set; }
 
-        public string role { get; set; }
+        [Column(TypeName = "int")]
+        public int role { get; set; }
 
         public string token { get; set; }
 
         public string RefreshToken { get; set; }
 
         public DateTime RefreshTokenExpiryTime { get; set; }
+
+        
 
     }
 }
