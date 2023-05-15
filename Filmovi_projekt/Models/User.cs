@@ -21,13 +21,10 @@ namespace Filmovi_projekt.Models
         [Column(TypeName = "bit")]
         public Boolean verified { get; set; }
 
-        [Column(TypeName = "nvarchar(50)")]
         public string activation_code { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
         public string role { get; set; }
 
-        [Column(TypeName = "varchar(255)")]
         public string token { get; set; }
 
         public string RefreshToken { get; set; }

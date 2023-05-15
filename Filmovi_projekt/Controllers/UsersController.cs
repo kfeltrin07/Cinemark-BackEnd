@@ -108,16 +108,20 @@ namespace Filmovi_projekt.Controllers
           {
               return Problem("Entity set 'LoginContext.logins'  is null.");
           }
-          login.password=PasswordHasher.HashPassword(login.password);
-          login.role = "user";
-            await _context.Users.AddAsync(login);
+                login.password=PasswordHasher.HashPassword(login.password);
+                login.role = "user";
+                login.token = "string";
+                login.RefreshToken = "string";
+                login.RefreshTokenExpiryTime = DateTime.Now;
+
+                await _context.Users.AddAsync(login);
             await _context.SaveChangesAsync();
             
             return CreatedAtAction("GetLogin", new { id = login.id_user }, login);
             }
         catch (Exception) {
 
-            return BadRequest("User name postoji");
+            return BadRequest();
 
             }
           }
@@ -167,7 +171,7 @@ namespace Filmovi_projekt.Controllers
             var newAccessToken = user.token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken= newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(5);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(30);
             await _context.SaveChangesAsync();
 
             return Ok(new TokenApiDto()
@@ -192,7 +196,6 @@ namespace Filmovi_projekt.Controllers
             string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
-            login.role = "user";
 
             _context.Users.Add(login);
             await _context.SaveChangesAsync();
