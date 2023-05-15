@@ -166,7 +166,6 @@ namespace Filmovi_projekt.Controllers
             else if (user.verified == false)
                 return BadRequest(new { Message = "User is not activated" });
             else
-                return Ok(new { user });
 
             user.token = CreateJwt(user);
             var newAccessToken = user.token;
@@ -198,7 +197,8 @@ namespace Filmovi_projekt.Controllers
             string activationCode = Guid.NewGuid().ToString("N").Substring(0, 25);
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
-            login.role = 0;
+            login.role = "user";
+            login.RefreshTokenExpiryTime= DateTime.Now.AddMinutes(30);
 
             try
             {
@@ -264,51 +264,6 @@ namespace Filmovi_projekt.Controllers
             }
 
             return sentMail;
-        }
-
-        [HttpPost("activate")]
-        public async Task<IActionResult> ActivateUser(string activationCode, int idUser)
-        {
-            var user = await _context.Users.FindAsync(idUser);
-            if (user == null || user.activation_code != activationCode)
-                return BadRequest();
-
-            string activationCode = Guid.NewGuid().ToString("N").Substring(0,25);
-            login.password = PasswordHasher.HashPassword(login.password);
-            login.activation_code = activationCode;
-
-            _context.Users.Add(login);
-            await _context.SaveChangesAsync();
-
-            await SendEmailAsync(login, pageURL);
-            return Ok(new
-            {
-                Message = "User Activated!"
-            });
-        }
-
-        private async Task SendEmailAsync(User login, string pageURL)
-        {
-            using (MailMessage mm = new MailMessage("sender", login.email))
-            {
-                string pageUrl = pageURL +"login?activate="+ login.activation_code + "&id=" + login.id_user;
-                mm.Subject = "Account Activation";
-                string body = "Hello " + login.username.Trim() + ",";
-                body += "<br /><br />Please click the following link to activate your account";
-                body += "<br /><a href=\""+pageUrl+"\">Activate account</a> ";
-                body += "<br /><br />Thanks";
-                mm.Body = body;
-                mm.IsBodyHtml = true;
-
-                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com",587))
-                {
-                    smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential("sender", "password");
-                    smtp.EnableSsl = true;
-                    await smtp.SendMailAsync(mm);
-                }
-              
-            }
         }
 
         [HttpPost("activate")]
