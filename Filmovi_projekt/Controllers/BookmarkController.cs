@@ -175,5 +175,26 @@ namespace Filmovi_projekt.Controllers
             }
             return Ok(true);
         }
+
+
+        [HttpPost("DeleteBookmarksOfUser/{id}")]
+        public async Task<IActionResult> DeleteBookmarksOfUser(int id)
+        {
+            if (_context.Bookmark == null)
+            {
+                return NotFound();
+            }
+            var bookmarks = await _context.Bookmark.Where(x => x.id_user == id).ToListAsync();
+            if (bookmarks == null)
+            {
+                return NotFound();
+            }
+
+            _context.Bookmark.RemoveRange(bookmarks);
+            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return Ok("Sucess");
+        }
     }
 }
