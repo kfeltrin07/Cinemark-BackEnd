@@ -162,7 +162,7 @@ namespace Filmovi_projekt.Controllers
             if (login == null)
                 return BadRequest();
             var user = await _context.Users.FirstOrDefaultAsync(x => x.username == login.username);
-            
+
             if (user == null)
                 return NotFound(new { Message = "User not Found" });
             else if (!PasswordHasher.VerifyPassword(login.password, user.password))
@@ -170,19 +170,21 @@ namespace Filmovi_projekt.Controllers
             else if (user.verified == false)
                 return BadRequest(new { Message = "User is not activated" });
             else
-
-            user.token = CreateJwt(user);
-            var newAccessToken = user.token;
-            var newRefreshToken = CreateRefreshToken();
-            user.RefreshToken= newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-            await _context.SaveChangesAsync();
-
-            return Ok(new TokenApiDto()
             {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
-            });
+
+                user.token = CreateJwt(user);
+                var newAccessToken = user.token;
+                var newRefreshToken = CreateRefreshToken();
+                user.RefreshToken = newRefreshToken;
+                user.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(30);
+                await _context.SaveChangesAsync();
+
+                return Ok(new TokenApiDto()
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken
+                });
+            }
         }
 
         // GET: api/TestUsers/register
@@ -202,7 +204,7 @@ namespace Filmovi_projekt.Controllers
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
             login.role = "user";
-            login.RefreshTokenExpiryTime= DateTime.Now.AddDays(1);
+            login.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(30);
 
             try
             {

@@ -32,7 +32,5 @@ namespace Filmovi_projekt.Models
 
         public DateTime RefreshTokenExpiryTime { get; set; }
 
-        
-
     }
 }

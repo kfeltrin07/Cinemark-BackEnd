@@ -83,16 +83,18 @@ namespace Filmovi_projekt.Controllers
         // POST: api/Film_Genre
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Film_Genre>> PostFilm_Genre(Film_Genre film_Genre)
+        public async Task<ActionResult<Film_Genre>> PostFilm_Genre(Film_Genre newFilmGenre)
         {
-          if (_context.Film_Genre == null)
+
+          if (newFilmGenre == null)
           {
-              return Problem("Entity set 'Film_GenreContext.Film_Genre'  is null.");
+              return Problem("Entity set!");
           }
-            _context.Film_Genre.Add(film_Genre);
+            
+            _context.Film_Genre.Add(newFilmGenre);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetFilm_Genre", new { id = film_Genre.id_genre }, film_Genre);
+            return  CreatedAtAction("GetFilm_Genre", new { id = newFilmGenre.id_genre }, newFilmGenre);
         }
 
         // DELETE: api/Film_Genre/5
