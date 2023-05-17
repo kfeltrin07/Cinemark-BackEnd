@@ -78,7 +78,11 @@ namespace Filmovi_projekt.Controllers
 
             try
             {
-                login.password = PasswordHasher.HashPassword(login.password);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.password == login.password);
+                if (user == null)
+                {
+                    login.password = PasswordHasher.HashPassword(login.password);
+                }
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -171,7 +175,7 @@ namespace Filmovi_projekt.Controllers
             var newAccessToken = user.token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken= newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(30);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
             await _context.SaveChangesAsync();
 
             return Ok(new TokenApiDto()
@@ -198,7 +202,7 @@ namespace Filmovi_projekt.Controllers
             login.password = PasswordHasher.HashPassword(login.password);
             login.activation_code = activationCode;
             login.role = "user";
-            login.RefreshTokenExpiryTime= DateTime.Now.AddMinutes(30);
+            login.RefreshTokenExpiryTime= DateTime.Now.AddDays(1);
 
             try
             {
