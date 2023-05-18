@@ -84,8 +84,16 @@ namespace Filmovi_projekt.Controllers
           {
               return Problem("Entity set 'FilmsContext.Filmovi'  is null.");
           }
-            _context.Films.Add(films);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Films.Add(films);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { Message = e });
+            }
+           
 
             return CreatedAtAction("GetFilms", new { id = films.id_film }, films);
         }
