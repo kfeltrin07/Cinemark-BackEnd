@@ -44,7 +44,7 @@ builder.Services.AddCors(options =>
         builder.WithOrigins(
             "http://localhost:4200",
             "https://cinemark.serengetitech.com"
-        )
+        );
        builder.AllowAnyMethod();
        builder.AllowAnyHeader();
        builder.AllowCredentials();
