@@ -88,11 +88,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task GetFilms_ReturnsNotFoundForInvalidId()
         {
-            // Arrange
-            using (var context = new FilmsContext(_options))
-            {
-                // No films added to the database
-            }
 
             using (var context = new FilmsContext(_options))
             {
