@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Filmovi_projekt.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Filmovi_projekt.Controllers
 {
@@ -185,7 +186,7 @@ namespace Filmovi_projekt.Controllers
                 return NotFound();
             }
             var bookmarks = await _context.Bookmark.Where(x => x.id_user == id).ToListAsync();
-            if (bookmarks == null)
+            if (bookmarks.IsNullOrEmpty())
             {
                 return NotFound();
             }
