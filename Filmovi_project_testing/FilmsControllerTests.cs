@@ -164,12 +164,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task PostFilms_ReturnsCreatedResponseAndAddsFilm()
         {
-            // Arrange
-            using (var context = new FilmsContext(_options))
-            {
-                // No films in the database
-            }
-
             using (var context = new FilmsContext(_options))
             {
                 var controller = new FilmsController(context);
@@ -221,10 +215,6 @@ namespace Filmovi_project_testing
         public async Task DeleteFilms_ReturnsNotFoundForInvalidId()
         {
             // Arrange
-            using (var context = new FilmsContext(_options))
-            {
-                // No films in the database
-            }
 
             using (var context = new FilmsContext(_options))
             {
