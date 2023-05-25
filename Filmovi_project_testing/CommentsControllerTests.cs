@@ -60,7 +60,6 @@ namespace Filmovi_project_testing
         public async Task GetComments_ReturnsNotFound_WhenNoCommentsExist()
         {
             // Arrange
-            // Ensure there are no comments in the _dbContext
             _dbContext.Comments.RemoveRange(_dbContext.Comments);
             await _dbContext.SaveChangesAsync();
 
@@ -124,7 +123,6 @@ namespace Filmovi_project_testing
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
 
-            // Verify the comment is updated
             var updatedComment = await _dbContext.Comments.FindAsync(1);
             Assert.AreEqual("Updated Comment", updatedComment.comment);
         }
@@ -145,7 +143,6 @@ namespace Filmovi_project_testing
             // Assert
             Assert.IsInstanceOfType(result, typeof(BadRequestResult));
 
-            // Verify the comment is not updated
             var comment = await _dbContext.Comments.FindAsync(1);
             Assert.AreEqual("Test Comment", comment.comment);
         }
@@ -196,7 +193,6 @@ namespace Filmovi_project_testing
             // Assert
             Assert.IsInstanceOfType(result, typeof(NoContentResult));
 
-            // Verify the comment is deleted
             var comment = await _dbContext.Comments.FindAsync(1);
             Assert.IsNull(comment);
         }
