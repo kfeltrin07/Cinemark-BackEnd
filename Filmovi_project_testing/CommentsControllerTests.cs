@@ -22,7 +22,6 @@ namespace Filmovi_project_testing
         {
             _dbContextOptions = new DbContextOptionsBuilder<CommentsContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .EnableSensitiveDataLogging() 
                 .Options;
             _dbContext = new CommentsContext(_dbContextOptions);
             _controller = new CommentsController(_dbContext);
@@ -43,8 +42,6 @@ namespace Filmovi_project_testing
             _dbContext.Comments.Add(new Comments { id_comment = 2, comment = "Test Comment 2" });
             _dbContext.SaveChanges();
 
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.GetComments();
 
@@ -63,8 +60,6 @@ namespace Filmovi_project_testing
             _dbContext.Comments.RemoveRange(_dbContext.Comments);
             await _dbContext.SaveChangesAsync();
 
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.GetComments();
 
@@ -79,8 +74,6 @@ namespace Filmovi_project_testing
             _dbContext.Comments.Add(new Comments { id_comment = 1, comment = "Test Comment 1" });
             _dbContext.SaveChanges();
 
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.GetComments(1);
 
@@ -94,9 +87,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task GetComments_ReturnsNotFound_WhenCommentDoesNotExist()
         {
-            // Arrange
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.GetComments(1);
 
@@ -111,8 +101,6 @@ namespace Filmovi_project_testing
             // Arrange
             _dbContext.Comments.Add(new Comments { id_comment = 1, comment = "Test Comment" });
             _dbContext.SaveChanges();
-
-            var _controller = new CommentsController(_dbContext);
 
             // Act
             var commentToUpdate = await _dbContext.Comments.FindAsync(1);
@@ -135,8 +123,6 @@ namespace Filmovi_project_testing
             _dbContext.Comments.Add(new Comments { id_comment = 1, comment = "Test Comment" });
             _dbContext.SaveChanges();
 
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.PutComments(2, new Comments { id_comment = 1, comment = "Updated Comment" });
 
@@ -150,9 +136,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task PutComments_ReturnsNotFound_WhenCommentDoesNotExist()
         {
-            // Arrange
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.PutComments(1, new Comments { id_comment = 1, comment = "Updated Comment" });
 
@@ -163,9 +146,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task PostComments_ReturnsCreatedAtAction_WhenCommentIsCreated()
         {
-            // Arrange
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.PostComments(new Comments { id_comment = 1, comment = "New Comment" });
 
@@ -185,8 +165,6 @@ namespace Filmovi_project_testing
             _dbContext.Comments.Add(new Comments { id_comment = 1, comment = "Test Comment" });
             _dbContext.SaveChanges();
 
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.DeleteComments(1);
 
@@ -200,9 +178,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task DeleteComments_ReturnsNotFound_WhenCommentDoesNotExist()
         {
-            // Arrange
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.DeleteComments(1);
 
@@ -213,9 +188,6 @@ namespace Filmovi_project_testing
         [TestMethod]
         public async Task DeleteCommentsOfUser_ReturnsOk_WhenCommentsAreDeleted()
         {
-            // Arrange
-            var _controller = new CommentsController(_dbContext);
-
             // Act
             var result = await _controller.DeleteCommentsOfUser(1);
 
