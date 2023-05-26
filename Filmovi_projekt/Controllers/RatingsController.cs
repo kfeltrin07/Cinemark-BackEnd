@@ -103,5 +103,25 @@ namespace Filmovi_projekt.Controllers
         {
             return _context.Ratings.Any(e => e.id_rating == id);
         }
+
+        [HttpPost("DeleteRatingsOfUser/{id}")]
+        public async Task<IActionResult> DeleteRatingsOfUser(int id)
+        {
+            if (_context.Ratings == null)
+            {
+                return NotFound();
+            }
+            var comments = await _context.Ratings.Where(x => x.id_user == id).ToListAsync();
+            if (comments == null)
+            {
+                return NotFound();
+            }
+
+            _context.Ratings.RemoveRange(comments);
+            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            return Ok("Sucess");
+        }
     }
 }
